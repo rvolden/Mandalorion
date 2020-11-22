@@ -1,5 +1,5 @@
-# Mandalorion Episode III #
-*Revenge of the Isoforms*
+# Mandalorion #
+Episode III.5: Rogue Isoform
 
 Takes R2C2/C3POa data and defines high confidence isoforms.
 
