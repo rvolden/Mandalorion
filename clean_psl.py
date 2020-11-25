@@ -2,8 +2,8 @@
 # Christopher Vollmers
 # Roger Volden
 
-import numpy as np
 import sys
+
 
 def parse_contigs(psl_file, clean_psl_file):
     '''
@@ -16,39 +16,31 @@ def parse_contigs(psl_file, clean_psl_file):
         start = int(a[15])
         blocksizes = a[18].split(',')[:-1]
         blockstarts = a[20].split(',')[:-1]
-        readstarts = a[19].split(',')[:-1]
 
         blockstarts_clean = []
         readstarts_clean = []
         blocksizes_clean = []
-
         size_gap = []
 
-        for x in range(0, len(blocksizes), 1):
+        for x in range(len(blocksizes)):
             blockstart = int(blockstarts[x])
             blocksize = int(blocksizes[x])
-            readstart = int(readstarts[x])
             blockend = blockstart + blocksize
-
             size_gap.append(blocksize)
 
             try:
-                next_blockstart = int(blockstarts[x+1])
-                next_blocksize = int(blocksizes[x+1])
-                next_readstart = int(readstarts[x+1])
-                next_blockend = next_blockstart + next_blocksize
-
+                next_blockstart = int(blockstarts[x + 1])
                 gap = next_blockstart - blockend
                 size_gap.append(gap)
-            except:
+            except IndexError:
                 pass
 
         new_size_gap = []
         block = 0
-        for index in range(0, len(size_gap), 1):
-            if index%2 == 0:
+        for index in range(len(size_gap)):
+            if index % 2 == 0:
                 block += size_gap[index]
-            if index%2 == 1:
+            if index % 2 == 1:
                 if size_gap[index] < 20:
                     block += size_gap[index]
                 else:
@@ -62,7 +54,7 @@ def parse_contigs(psl_file, clean_psl_file):
         current_readposition = int(a[11])
         for index in range(0, len(new_size_gap), 1):
             inter = new_size_gap[index]
-            if index%2 == 0:
+            if index % 2 == 0:
                 blockstarts_clean.append(str(current_position))
                 blocksizes_clean.append(str(inter))
                 readstarts_clean.append(str(current_readposition))
@@ -70,7 +62,7 @@ def parse_contigs(psl_file, clean_psl_file):
                 current_position += inter
                 current_readposition += inter
 
-            if index%2 == 1:
+            if index % 2 == 1:
                 current_position += inter
 
         a[17] = str(len(blockstarts_clean))
@@ -86,9 +78,11 @@ def parse_contigs(psl_file, clean_psl_file):
         new_line = ('\t').join(a)
         out.write(new_line + '\n')
 
+
 def main():
     psl_file = sys.argv[1]
     clean_psl_file = sys.argv[2]
     parse_contigs(psl_file, clean_psl_file)
+
 
 main()
