@@ -216,6 +216,9 @@ os.system(
     )
 )
 print("Identifying Isoforms")
+# This script sort raw reads into isoform bins.
+# The two number variables determine the window around TSS and TES
+# in which read ends can fall and still be matched to the site.
 os.system(
     "python3 defineAndQuantifyIsoforms.py %s %s %s %s %s %s %s"
     % (
@@ -227,7 +230,7 @@ os.system(
         fasta_files,
         feature_count,
     )
-)  # This script sort raw reads into isoform bins. The two number variables determine the window around TSS and TES in which read ends can fall and still be matched to the site.
+)
 os.system(
     "python3 createConsensi.py -p %s -s %s -c %s -n %s"
     % (path, subsample_consensus, config_file, minimap2_threads)
