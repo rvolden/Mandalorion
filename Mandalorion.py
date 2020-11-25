@@ -11,10 +11,11 @@ parser.add_argument(
     "-c",
     "--config_file",
     type=str,
-    help="Tab delimited file that specifies where minimap, blat, \
-                          emtrey, and racon executables are",
+    help="Tab delimited file that specifies where minimap, blat, emtrey, and racon executables are",
 )
-parser.add_argument("-p", "--path", type=str, help="Directory to put output files into")
+parser.add_argument(
+    "-p", "--path", type=str, help="Directory to put output files into"
+)
 parser.add_argument(
     "-u",
     "--upstream_buffer",
@@ -39,14 +40,15 @@ parser.add_argument(
 parser.add_argument(
     "-g", "--genome_annotation", type=str, help="Genome annotation file (gtf)"
 )
-parser.add_argument("-G", "--genome_sequence", type=str, help="Genome file (fasta)")
+parser.add_argument(
+    "-G", "--genome_sequence", type=str, help="Genome file (fasta)"
+)
 parser.add_argument(
     "-r",
     "--minimum_ratio",
     type=str,
     default="0.01",
-    help="Proportion of reads that align to a locus required for an \
-                          isoform (default 0.01)",
+    help="Proportion of reads that align to a locus required for an isoform (default 0.01)",
 )
 parser.add_argument("-i", "--minimum_internal_ratio", type=str, default="1")
 parser.add_argument(
@@ -57,7 +59,10 @@ parser.add_argument(
     help="Minimum number of reads to make an isoform (default 5)",
 )
 parser.add_argument(
-    "-a", "--adapter_file", type=str, help="Fasta file with 5prime and 3prime adapters"
+    "-a",
+    "--adapter_file",
+    type=str,
+    help="Fasta file with 5prime and 3prime adapters",
 )
 parser.add_argument(
     "-f",
@@ -73,8 +78,7 @@ parser.add_argument(
     "--overhangs",
     type=str,
     default="0,40,0,40",
-    help="Defines bounds for unaligned bases on ends. \
-                          Format: min5prime,max5prime,min3prime,max3prime (default 0,40,0,40))",
+    help="Defines bounds for unaligned bases on ends. Format: min5prime,max5prime,min3prime,max3prime (default 0,40,0,40))",
 )
 parser.add_argument(
     "-t",
@@ -88,8 +92,7 @@ parser.add_argument(
     "--ends",
     type=str,
     default="ATGGG,AAAAA",
-    help="Ends of your sequences. Defaults to Smartseq ends.\
-                          Format: 5prime,3prime",
+    help="Ends of your sequences. Defaults to Smartseq ends. Format: 5prime,3prime",
 )
 parser.add_argument(
     "-I",
