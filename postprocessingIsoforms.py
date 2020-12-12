@@ -5,30 +5,34 @@
 import sys
 import os
 import argparse
-import numpy as np
+
 
 def argParser():
     '''Parses arguments.'''
-    parser = argparse.ArgumentParser(description = '',
-                                     add_help = True,
-                                     prefix_chars = '-')
+    parser = argparse.ArgumentParser(description='', add_help=True, prefix_chars='-')
     parser.add_argument('--input_fasta_file', '-i', type=str)
     parser.add_argument('--output_path', '-o', type=str)
     parser.add_argument('--adapter_file', '-a', type=str)
-    parser.add_argument('--config', '-c', type=str, action='store', default='',
-                        help='If you want to use a config file to specify paths to\
-                              programs, specify them here. Use for poa, racon, gonk,\
-                              blat, and minimap2 if they are not in your path.')
-    parser.add_argument('-e', '--ends', type=str, default='ATGGG,AAAAA',
-                        help='Ends of your sequences. Defaults to Smartseq ends.\
-                              Format: 5prime,3prime')
+    parser.add_argument(
+        '--config', '-c', type=str, action='store', default='',
+        help='If you want to use a config file to specify paths to\
+              programs, specify them here. Use for poa, racon, gonk,\
+              blat, and minimap2 if they are not in your path.',
+    )
+    parser.add_argument(
+        '-e', '--ends', type=str, default='ATGGG,AAAAA',
+        help='Ends of your sequences. Defaults to Smartseq ends.\
+              Format: 5prime,3prime',
+    )
     return vars(parser.parse_args())
+
 
 args = argParser()
 output_path = args['output_path'] + '/'
 input_file = args['input_fasta_file']
 adapter_file = args['adapter_file']
 ends = args['ends']
+
 
 def configReader(configIn):
     '''Parses the config file.'''
@@ -45,15 +49,15 @@ def configReader(configIn):
         inConfig.add(key)
     # check for missing programs
     # if missing, default to path
-    for missing in possible-inConfig:
+    for missing in possible - inConfig:
         if missing == 'consensus':
             path = 'consensus.py'
         else:
             path = missing
         progs[missing] = path
-        sys.stderr.write('Using ' + str(missing)
-                         + ' from your path, not the config file.\n')
+        sys.stderr.write('Using ' + str(missing) + ' from your path, not the config file.\n')
     return progs
+
 
 if args['config'] or args['c']:
     progs = configReader(args['config'])
@@ -61,9 +65,10 @@ if args['config'] or args['c']:
 else:
     blat = 'blat'
 
+
 def read_fasta(inFile):
     '''Reads in FASTA files, returns a dict of header:sequence'''
-    readDict = {}
+    readDict, lastHead = {}, ''
     for line in open(inFile):
         line = line.rstrip()
         if not line:
@@ -79,43 +84,42 @@ def read_fasta(inFile):
         readDict[lastHead] = ''.join(readDict[lastHead])
     return readDict
 
+
 def reverse_complement(sequence):
     '''Returns the reverse complement of a sequence'''
-    bases = {'A':'T', 'C':'G', 'G':'C', 'T':'A', 'N':'N', '-':'-'}
+    bases = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N', '-': '-'}
     return ''.join([bases[x] for x in list(sequence)])[::-1]
 
+
 def run_blat(path, infile, adapter_fasta):
-    os.system('%s -noHead -stepSize=1 -tileSize=6 -t=DNA q=DNA -minScore=10 \
-              -minIdentity=10 -minMatch=1 -oneOff=1 \
-              %s %s %s/Adapter_to_consensus_alignment.psl' \
-              %(blat, adapter_fasta, infile, path))
+    os.system(
+        '%s -noHead -stepSize=1 -tileSize=6 -t=DNA q=DNA -minScore=10 \
+         -minIdentity=10 -minMatch=1 -oneOff=1 \
+         %s %s %s/Adapter_to_consensus_alignment.psl'
+        % (blat, adapter_fasta, infile, path)
+    )
 
-def parse_blat(reads,path):
-    adapter_dict, iterator = {}, 0
-    for name,sequence in reads.items():
 
-        adapter_dict[name] = {}
-        adapter_dict[name]['+'] = []
-        adapter_dict[name]['-'] = []
-        adapter_dict[name]['+'].append(('-', 1, 0))
-        adapter_dict[name]['-'].append(('-', 1, len(sequence)))
+def parse_blat(reads, path):
+    adapter_dict = {}
+    for name, sequence in reads.items():
+        adapter_dict[name] = {'+': [('-', 1, 0)], '-': [('-', 1, len(sequence))]}
 
     for line in open(path + '/Adapter_to_consensus_alignment.psl'):
         a = line.strip().split('\t')
         read_name, adapter, strand = a[9], a[13], a[8]
         if int(a[5]) < 50 and float(a[0]) > 10:
             if strand == '+':
-                  start = int(a[11]) - int(a[15])
-                  end = int(a[12]) + (int(a[14]) - int(a[16]))
-                  position = end
+                start = int(a[11]) - int(a[15])
+                end = int(a[12]) + (int(a[14]) - int(a[16]))
+                position = end
             if strand == '-':
-                  start = int(a[11]) - (int(a[14]) - int(a[16]))
-                  end = int(a[12]) + int(a[15])
-                  position = start
-            adapter_dict[read_name][strand].append((adapter,
-                                                    float(a[0]),
-                                                    position))
+                start = int(a[11]) - (int(a[14]) - int(a[16]))
+                end = int(a[12]) + int(a[15])
+                position = start
+            adapter_dict[read_name][strand].append((adapter, float(a[0]), position))
     return adapter_dict
+
 
 def screen_for_53(seq1, seq2):
     direction = '.'
@@ -126,16 +130,15 @@ def screen_for_53(seq1, seq2):
         direction = '-'
     return direction
 
+
 def write_fasta_file(path, adapter_dict, reads):
     out = open(path + 'Isoforms_full_length_consensus_reads.fasta', 'w')
     out3 = open(path + 'Isoforms_full_length_consensus_reads_left_splint.fasta', 'w')
     out5 = open(path + 'Isoforms_full_length_consensus_reads_right_splint.fasta', 'w')
 
     for name, sequence in reads.items():
-        adapter_plus = sorted(adapter_dict[name]['+'],
-                              key=lambda x: x[2], reverse=False)
-        adapter_minus = sorted(adapter_dict[name]['-'],
-                              key=lambda x: x[2], reverse=False)
+        adapter_plus = sorted(adapter_dict[name]['+'], key=lambda x: x[2], reverse=False)
+        adapter_minus = sorted(adapter_dict[name]['-'], key=lambda x: x[2], reverse=False)
         plus_list_name, plus_list_position = [], []
         minus_list_name, minus_list_position = [], []
         for adapter in adapter_plus:
@@ -149,38 +152,35 @@ def write_fasta_file(path, adapter_dict, reads):
 
         if len(plus_list_name) == 1 and len(minus_list_name) == 1:
             if plus_list_position[0] < minus_list_position[0]:
-                seq = sequence[plus_list_position[0] : minus_list_position[0]]
-                seq1=sequence[plus_list_position[0]-10 : plus_list_position[0]+30]
-                seq2 = sequence[minus_list_position[0]-30 : minus_list_position[0]+10]
+                seq1 = sequence[plus_list_position[0] - 10:plus_list_position[0] + 30]
+                seq2 = sequence[minus_list_position[0] - 30:minus_list_position[0] + 10]
                 direction = screen_for_53(seq1, seq2)
-                ada = sequence[plus_list_position[0]+3 : minus_list_position[0]-3]
+                ada = sequence[plus_list_position[0] + 3:minus_list_position[0] - 3]
                 if direction == '+':
-                    ada,polyA = remove_polyA(ada)
+                    ada, polyA = remove_polyA(ada)
                     if polyA:
-                        out.write('>%s\n%s\n' %(name, ada))
-                        out3.write('>%s\n%s\n' %(name, reverse_complement(sequence[:plus_list_position[0]])))
-                        out5.write('>%s\n%s\n' %(name, sequence[minus_list_position[0]:]))
+                        out.write('>%s\n%s\n' % (name, ada))
+                        out3.write('>%s\n%s\n' % (name, reverse_complement(sequence[:plus_list_position[0]])))
+                        out5.write('>%s\n%s\n' % (name, sequence[minus_list_position[0]:]))
                 elif direction == '-':
-                    ada,polyA = remove_polyA(reverse_complement(ada))
+                    ada, polyA = remove_polyA(reverse_complement(ada))
                     if polyA:
-                        out.write('>%s\n%s\n' %(name, ada))
-                        out5.write('>%s\n%s\n' %(name, reverse_complement(sequence[:plus_list_position[0]])))
-                        out3.write('>%s\n%s\n' %(name, sequence[minus_list_position[0]:]))
+                        out.write('>%s\n%s\n' % (name, ada))
+                        out5.write('>%s\n%s\n' % (name, reverse_complement(sequence[:plus_list_position[0]])))
+                        out3.write('>%s\n%s\n' % (name, sequence[minus_list_position[0]:]))
+
 
 def remove_polyA(seq):
     reverse = seq[::-1]
-    Astate = False
-    Astretch = 0
-    Vstretch = 0
-    trimPos = 0
-    for pos in range(0,len(reverse),1):
+    Astate, Astretch, Vstretch, trimPos = False, 0, 0, 0
+    for pos in range(0, len(reverse), 1):
         base = reverse[pos]
         if not Astate:
-            if base=='A':
-                 Astretch+=1
-                 if Astretch == 4:
-                     Astate = True
-                     lastA=pos
+            if base == 'A':
+                Astretch += 1
+                if Astretch == 4:
+                    Astate = True
+                    lastA = pos
         if Astate:
             if base != 'A':
                 Vstretch += 1
@@ -189,23 +189,25 @@ def remove_polyA(seq):
                 Astretch += 1
                 if Astretch >= 3:
                     Vstretch = 0
-                    lastA=pos
+                    lastA = pos
             if Vstretch >= 3:
                 trimPos = lastA
                 break
     reverseTrim = reverse[trimPos:]
-    seqTrim=reverseTrim[::-1]
-    return seqTrim,Astate
+    seqTrim = reverseTrim[::-1]
+    return seqTrim, Astate
+
 
 def main():
-    print('   reading reads')
+    print('\treading reads')
     reads = read_fasta(input_file)
-    print('   aligning adapters')
+    print('\taligning adapters')
     run_blat(output_path, input_file, adapter_file)
-    print('   parsing output')
+    print('\tparsing output')
     adapter_dict = parse_blat(reads, output_path)
-    print('   finding polyA and writing file')
+    print('\tfinding polyA and writing file')
     write_fasta_file(output_path, adapter_dict, reads)
+
 
 if __name__ == '__main__':
     main()
