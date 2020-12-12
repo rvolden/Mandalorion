@@ -1,5 +1,5 @@
 # Mandalorion #
-Episode III.5: Rogue Isoform
+Episode III.5: Rogue Isoforms
 
 Takes R2C2/C3POa data and defines high confidence isoforms.
 
@@ -14,12 +14,12 @@ The paths to these will need to be put into your config file [like this.](exampl
 
 ## Usage ##
 ```bash
-python3 defineAndQuantifyWrapper.py [OPTIONS]
+python3 Mandalorion.py [OPTIONS]
 ```
 
 Running with default settings:
 ```bash
-python3 defineAndQuantifyWrapper.py -c config_file -p . -g gencodeV29.gtf -G hg38.fasta -a adapters.fasta -f R2C2_consensi.fasta -b R2C2_subreads.fastq
+python3 Mandalorion.py -c config_file -p . -g gencodeV29.gtf -G hg38.fasta -a adapters.fasta -f R2C2_consensi.fasta -b R2C2_subreads.fastq
 ```
 
 Required options:
