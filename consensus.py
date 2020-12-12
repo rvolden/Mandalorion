@@ -11,6 +11,7 @@ Usage: python3 consensus.py aligned.fastq reads.fastq >consensus.fasta
 
 import sys
 
+
 def consensus(sequences, qualityDict):
     '''
     Makes a consensus sequence based on base frequency and quality.
@@ -45,18 +46,20 @@ def consensus(sequences, qualityDict):
             except IndexError: # if gap at end
                 gapLen = 1
             if avgQual(seqAqual, i, gapLen) > avgQual(seqBqual, i, gapLen):
-                consensus += seqA[i:i+gapLen]
+                consensus += seqA[i:i + gapLen]
             else:
-                consensus += seqB[i:i+gapLen]
+                consensus += seqB[i:i + gapLen]
             i += gapLen
             continue
         i += 1
     print('>consensus')
     print(consensus.replace('-', ''))
 
+
 def avgQual(qual, i, gapLen):
     '''Returns average quality of a segment.'''
-    return sum(ord(x) for x in list(qual[i:i+gapLen]))/gapLen
+    return sum(ord(x) for x in list(qual[i:i + gapLen])) / gapLen
+
 
 def normalizeLen(seq, quality):
     '''
@@ -66,21 +69,24 @@ def normalizeLen(seq, quality):
     '''
     seqIndex, qualIndex = 0, 0
     newQuality = ''
-    while qualIndex + 1 != len(quality):
+    while qualIndex < len(quality):
         if seq[seqIndex] != '-':
             newQuality += quality[qualIndex]
             qualIndex += 1
             seqIndex += 1
-        if seq[seqIndex] == '-':
-            newQuality += chr(int((ord(quality[qualIndex-1]) + ord(quality[qualIndex]))/2))
+        elif seq[seqIndex] == '-' and qualIndex == 0:
+            newQuality += quality[qualIndex]
             seqIndex += 1
-    newQuality += quality[-1]
+        else:
+            newQuality += chr(int((ord(quality[qualIndex - 1]) + ord(quality[qualIndex])) / 2))
+            seqIndex += 1
     if len(seq) != len(newQuality):
         gapLen = 0
-        while seq[-1-gapLen] == '-':
+        while seq[-1 - gapLen] == '-':
             newQuality += newQuality[-1]
             gapLen += 1
     return newQuality
+
 
 def fastaReader(inFile):
     '''Reads in FASTA files.'''
@@ -100,6 +106,7 @@ def fastaReader(inFile):
     sequences.append(''.join(tempSeqs).upper())
     return sequences[1:]
 
+
 def fastqReader(inFile):
     '''Reads in FASTQ files. Only returns sequence and quality lines.'''
     sequences, quality, lineNum = [], [], 0
@@ -116,6 +123,7 @@ def fastqReader(inFile):
         lineNum += 1
     return sequences, quality
 
+
 def main():
     '''
     Reads in files and organizes information.
@@ -127,5 +135,6 @@ def main():
     for i in range(len(fastqSeqs)):
         seqDict[fastqSeqs[i]] = qualityScores[i]
     consensus(alignedSeqs, seqDict)
+
 
 main()
