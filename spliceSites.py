@@ -80,8 +80,7 @@ def myround(x, base=10):
     return int(base * round(float(x) / base))
 
 
-def find_peaks(density_dict, out, peaks, reverse, cutoff,
-               histo_cov, side, peak_areas, chrom):
+def find_peaks(density_dict, out, peaks, reverse, cutoff, histo_cov, side, peak_areas, chrom):
     if reverse:
         dist_range = range(splice_site_width, -splice_site_width, -1)
     else:
@@ -90,20 +89,15 @@ def find_peaks(density_dict, out, peaks, reverse, cutoff,
     entry_list = []
     for entry in density_dict:
         entry_list.append([entry, density_dict[entry]])
-    for entry, density in sorted(
-            entry_list, key=lambda x: len(x[1]), reverse=True):
+    for entry, density in sorted(entry_list, key=lambda x: len(x[1]), reverse=True):
 
         if len(density) < minimum_read_count:
             break
         if entry in peak_areas[chrom][side]:
             continue
-        best_extra_list, peak_center, cov_area, best_dirs = scan_for_best_bin(
-            entry, dist_range, density_dict, peak_areas, chrom, side
-        )
+        best_extra_list, peak_center, cov_area, best_dirs = scan_for_best_bin(entry, dist_range, density_dict, peak_areas, chrom, side)
 
-        cov, cov_area = determine_cov(
-            cov_area, chrom, reverse, peak_center, histo_cov
-        )
+        cov, cov_area = determine_cov(cov_area, chrom, reverse, peak_center, histo_cov)
 
         if cov > 0:
             proportion = round(best_extra_list / cov, 3)
@@ -127,9 +121,7 @@ def find_peaks(density_dict, out, peaks, reverse, cutoff,
                           + str(peak_center - splice_site_width) + '_'
                           + str(peak_center + splice_site_width) + '_'
                           + str(proportion) + '\t' + str(peaks) + '\n')
-                for base in range(
-                        peak_center - splice_site_width,
-                        peak_center + splice_site_width + 1):
+                for base in range(peak_center - splice_site_width, peak_center + splice_site_width + 1):
                     peak_areas[chrom][side][base] = 1
 
     return peaks, peak_areas
@@ -184,15 +176,11 @@ def collect_reads(infile, sam_file, dir_dict, target_chrom):
             for low_bound in low_bounds:
                 if low_bound not in histo_left_bases[chrom]:
                     histo_left_bases[chrom][low_bound] = []
-                histo_left_bases[chrom][low_bound].append(
-                    [0, begin, span, cov_set, dirn]
-                )
+                histo_left_bases[chrom][low_bound].append([0, begin, span, cov_set, dirn])
             for up_bound in up_bounds:
                 if up_bound not in histo_right_bases[chrom]:
                     histo_right_bases[chrom][up_bound] = []
-                histo_right_bases[chrom][up_bound].append(
-                    [0, begin, span, cov_set, dirn]
-                )
+                histo_right_bases[chrom][up_bound].append([0, begin, span, cov_set, dirn])
 
     return histo_left_bases, histo_right_bases, histo_cov
 
@@ -205,7 +193,7 @@ def parse_genome(input_file, left_bounds, right_bounds):
         if len(a) <= 7:
             continue
         if a[2] == 'exon':
-            testKey = a[8].split('transcript_id '')[1].split(''')[0]
+            testKey = a[8].split('transcript_id ' ')[1].split(' '')[0]
             if not gene_dict.get(testKey):
                 gene_dict[testKey] = []
             gene_dict[testKey].append((a[0], a[3], a[4], a[6]))
@@ -254,24 +242,15 @@ def make_genome_bins(bounds, side, peaks, chrom, peak_areas):
             if len(sub_list) > 1:
                 splice_dists = []
                 for splice_pos in range(0, len(sub_list) - 1):
-                    splice_dists.append(
-                        int(sub_list[splice_pos + 1])
-                        - int(sub_list[splice_pos])
-                    )
+                    splice_dists.append(int(sub_list[splice_pos + 1]) - int(sub_list[splice_pos]))
                 if min(splice_dists) > 3:
                     for x in range(0, len(sub_list), 1):
                         if x != 0:
-                            start = int(
-                                sub_list[x]
-                                - ((sub_list[x] - sub_list[x - 1]) / 2)
-                            )
+                            start = int(sub_list[x] - ((sub_list[x] - sub_list[x - 1]) / 2))
                         else:
                             start = int(sub_list[x]) - 1
                         if x != len(sub_list) - 1:
-                            end = int(
-                                sub_list[x]
-                                + ((sub_list[x + 1] - sub_list[x]) / 2)
-                            )
+                            end = int(sub_list[x] + ((sub_list[x + 1] - sub_list[x]) / 2))
                         else:
                             end = int(sub_list[x]) + 1
 
@@ -332,8 +311,7 @@ def collect_chroms(isoform_psl, chroms):
 def main():
     left_bounds, right_bounds = {}, {}
     print('\tparsing annotated splice sites')
-    chrom_list, left_bounds, right_bounds = parse_genome(
-        genome_file, left_bounds, right_bounds)
+    chrom_list, left_bounds, right_bounds = parse_genome(genome_file, left_bounds, right_bounds)
 
     Left_Peaks = 0
     Right_Peaks = 0
@@ -346,8 +324,7 @@ def main():
     for chrom in sorted(list(chrom_list)):
         print('\tnow processing ', chrom)
         print('\tcollecting reads')
-        histo_left_bases, histo_right_bases, histo_cov = collect_reads(
-            infile, sam_file, dir_dict, chrom)
+        histo_left_bases, histo_right_bases, histo_cov = collect_reads(infile, sam_file, dir_dict, chrom)
 
         peak_areas[chrom] = {}
         peak_areas[chrom]['l'] = {}
@@ -359,28 +336,24 @@ def main():
         if 'g' in refine:
             Left_Peaks_old = Left_Peaks
             Right_Peaks_old = Right_Peaks
-            Left_Peaks, peak_areas = make_genome_bins(
-                left_bounds[chrom], 'l', Left_Peaks, chrom, peak_areas)
-            Right_Peaks, peak_areas = make_genome_bins(
-                right_bounds[chrom], 'r', Right_Peaks, chrom, peak_areas)
+            Left_Peaks, peak_areas = make_genome_bins(left_bounds[chrom], 'l', Left_Peaks, chrom, peak_areas)
+            Right_Peaks, peak_areas = make_genome_bins(right_bounds[chrom], 'r', Right_Peaks, chrom, peak_areas)
 
-            print('\tparsed annotation-based splice-sites',
-                  Left_Peaks - Left_Peaks_old,
-                  Right_Peaks - Right_Peaks_old,
-                  )
+            print(
+                '\tparsed annotation-based splice-sites',
+                Left_Peaks - Left_Peaks_old,
+                Right_Peaks - Right_Peaks_old,
+            )
         Left_Peaks_old = Left_Peaks
         Right_Peaks_old = Right_Peaks
-        Left_Peaks, peak_areas = find_peaks(
-            histo_left_bases[chrom], out, Left_Peaks, True,
-            cutoff, histo_cov, 'l', peak_areas, chrom)
-        Right_Peaks, peak_areas = find_peaks(
-            histo_right_bases[chrom], out, Right_Peaks, False, cutoff,
-            histo_cov, 'r', peak_areas, chrom)
+        Left_Peaks, peak_areas = find_peaks(histo_left_bases[chrom], out, Left_Peaks, True, cutoff, histo_cov, 'l', peak_areas, chrom)
+        Right_Peaks, peak_areas = find_peaks(histo_right_bases[chrom], out, Right_Peaks, False, cutoff, histo_cov, 'r', peak_areas, chrom)
 
-        print('\tdetected read-based splice-sites',
-              Left_Peaks - Left_Peaks_old,
-              Right_Peaks - Right_Peaks_old,
-              )
+        print(
+            '\tdetected read-based splice-sites',
+            Left_Peaks - Left_Peaks_old,
+            Right_Peaks - Right_Peaks_old,
+        )
 
 
 main()
