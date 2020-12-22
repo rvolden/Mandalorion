@@ -80,7 +80,7 @@ else:
     minimap2 = 'minimap2'
     racon = 'racon'
     blat = 'blat'
-    poa = 'poa'
+    poa = 'abpoa'
     medaka = 'medaka_consensus'
     consensus = 'consensus.py'
 
