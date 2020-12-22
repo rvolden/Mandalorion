@@ -1,4 +1,7 @@
 # Mandalorion #
+[![Github release](https://img.shields.io/github/tag/rvolden/Mandalorion.svg?label=Version)](https://github.com/rvolden/Mandalorion/tags)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
+
 Episode III.5: Rogue Isoforms
 
 Takes R2C2/C3POa data and defines high confidence isoforms.
@@ -9,6 +12,7 @@ Takes R2C2/C3POa data and defines high confidence isoforms.
 - [racon](https://github.com/isovic/racon)
 - [emtrey](https://github.com/rvolden/emtrey) ([go](https://golang.org/dl/))
 - [blat source](https://users.soe.ucsc.edu/~kent/src/blatSrc35.zip) or [blat executable](http://hgdownload.soe.ucsc.edu/admin/exe/)
+- [medaka](https://github.com/nanoporetech/medaka)
 
 The paths to these will need to be put into your config file [like this.](example_config) If you have the program installed or in your path already, replace the path with the name of the program.
 
@@ -45,6 +49,10 @@ Tweakable parameters:
 -O  overhangs, defines bounds for unaligned bases on ends, format: min5',max5',min3',max3' (default 0,40,0,40)
 -t  number of threads to use for minimap2 (default 4)
 -e  ends, the ends of your sequences, format: 5prime,3prime (default 'ATGGG,AAAAA')
+-I  minimum isoform length (default 500)
+-n  minimum feature count (number of reads, default 2)
+-w  splice site window (default 1)
+-A  A proportion cutoff - isoforms with A content within a 30 nt window around the polyA higher than this will be discarded (default 0.5)
 ```
 
 ## Utils ##
