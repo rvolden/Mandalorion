@@ -34,8 +34,8 @@ Required options:
 -g  annotation file (gtf)
 -G  genome file (fasta)
 -a  adapter file (fasta)
--f  R2C2 read file (fasta)
--b  R2C2 subread file (fastq)
+-f  R2C2 read file (fasta, can be comma separated list)
+-b  R2C2 subread file (fastq, can be comma separated list)
 ```
 
 Tweakable parameters:
