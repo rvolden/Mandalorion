@@ -52,10 +52,11 @@ parser.add_argument(
 )
 parser.add_argument(
     '-f', '--R2C2_Consensus_reads', type=str,
-    help='Fasta file with R2C2 consensus reads'
+    help='Fasta file with R2C2 consensus reads, can be entered as a comma separated list'
 )
 parser.add_argument(
-    '-b', '--R2C2_subreads', type=str, help='Fastq file with R2C2 subreads'
+    '-b', '--R2C2_subreads', type=str,
+    help='Fastq file with R2C2 subreads, can be entered as a comma separated list'
 )
 parser.add_argument(
     '-O', '--overhangs', type=str, default='0,40,0,40',
