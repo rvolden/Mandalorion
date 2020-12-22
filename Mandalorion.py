@@ -60,7 +60,7 @@ parser.add_argument(
 parser.add_argument(
     '-O', '--overhangs', type=str, default='0,40,0,40',
     help='''Defines bounds for unaligned bases on ends. Format:
-            min5prime,max5prime,min3prime,max3prime (default 0,40,0,40))'''
+            min5prime,max5prime,min3prime,max3prime (default 0,40,0,40)'''
 )
 parser.add_argument(
     '-t', '--minimap2_threads', type=str, default='4',
@@ -73,22 +73,22 @@ parser.add_argument(
 )
 parser.add_argument(
     '-I', '--minimum_isoform_length', type=str, default='500',
-    help='Minimum length in nt of isoforms that will be considered'
+    help='Minimum length in nt of isoforms that will be considered (default 500)'
 )
 parser.add_argument(
     '-n', '--minimum_feature_count', type=str, default='2',
     help='''Features (starts,ends, new splice sites) will be considered
-            if they are present in this number of reads'''
+            if they are present in this number of reads (default 2)'''
 )
 parser.add_argument(
     '-w', '--splice_site_window', type=str, default='1',
     help='''reads spliced within this number of nucleotides on each side
-            of a splice site will be considered spliced at this site'''
+            of a splice site will be considered spliced at this site (default 1)'''
 )
 parser.add_argument(
     '-A', '--Acutoff', type=str, default='0.5',
     help='''Isoforms with A content of more than this cutoff in a 30nt
-            window surrounding their polyA site will be discarded'''
+            window surrounding their polyA site will be discarded (default 0.5)'''
 )
 
 args = parser.parse_args()
