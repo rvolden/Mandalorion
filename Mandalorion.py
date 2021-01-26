@@ -6,6 +6,8 @@ import sys
 import os
 import argparse
 
+VERSION = 'v3.5.0'
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '-c', '--config_file', type=str,
@@ -91,7 +93,14 @@ parser.add_argument(
     help='''Isoforms with A content of more than this cutoff in a 30nt
             window surrounding their polyA site will be discarded (default 0.5)'''
 )
+parser.add_argument(
+    '-v', '--version', action='version', version=VERSION,
+    help='Prints Mandalorion version'
+)
 
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(0)
 args = parser.parse_args()
 
 config_file = args.config_file
