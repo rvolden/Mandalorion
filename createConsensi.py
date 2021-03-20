@@ -299,7 +299,7 @@ def main():
         fastq = line.split('\t')[1]
         name = line.split('\t')[2].strip()
         pool.apply_async(determine_consensus, [name, fasta, fastq, str(counter)])
-        determine_consensus(name, fasta, fastq, str(counter))
+        # determine_consensus(name, fasta, fastq, str(counter))
         counter_list.append(str(counter))
     print('\tmaking consensus sequences of', counter, 'isoforms')
 
