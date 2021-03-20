@@ -59,9 +59,9 @@ def determine_cov(cov_area, chrom, reverse, peak_center, histo_cov):
     counter = 0
     for base_f in cov_area:
         count = False
-        if reverse and base_f < peak_center:
+        if not reverse and base_f > peak_center:
             count = True
-        elif not reverse and base_f > peak_center:
+        elif reverse and base_f < peak_center:
             count = True
         if count:
             if counter <= 3:
@@ -193,7 +193,7 @@ def parse_genome(input_file, left_bounds, right_bounds):
         if len(a) <= 7:
             continue
         if a[2] == 'exon':
-            testKey = a[8].split('transcript_id ' ')[1].split(' '')[0]
+            testKey = a[8].split('transcript_id "')[1].split('"')[0]
             if not gene_dict.get(testKey):
                 gene_dict[testKey] = []
             gene_dict[testKey].append((a[0], a[3], a[4], a[6]))
