@@ -236,7 +236,7 @@ def determine_consensus(name, fasta, fastq, counter):
         for read in reads:
             if 'Consensus' in read:
                 out_cons_file = open(poa_cons, 'w')
-                out_cons_file.write('>' + name + '\n'
+                out_cons_file.write('>Consensus\n'
                                     + reads[read].replace('-', '') + '\n')
                 out_cons_file.close()
 
