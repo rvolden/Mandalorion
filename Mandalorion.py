@@ -214,9 +214,9 @@ os.system(
     % (path, subsample_consensus, config_file, minimap2_threads)
 )
 os.system(
-    '''python3 filterIsoforms.py
-        -p %s -i %s -r %s -R %s -n %s -a %s -G %s -c %s
-        -O %s -t %s -e %s -A %s -s %s -d %s -I %s 2> %s'''
+    'python3 filterIsoforms.py \
+        -p %s -i %s -r %s -R %s -n %s -a %s -G %s -c %s \
+        -O %s -t %s -e %s -A %s -s %s -d %s -I %s 2> %s'
     % (
         path,
         path + '/Isoform_Consensi.fasta',
