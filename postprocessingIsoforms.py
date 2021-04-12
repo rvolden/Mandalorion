@@ -181,6 +181,8 @@ def remove_polyA(seq):
                 if Astretch == 4:
                     Astate = True
                     lastA = pos
+            else:
+                Astretch = 0
         if Astate:
             if base != 'A':
                 Vstretch += 1
