@@ -53,6 +53,8 @@ def configReader(configIn):
     for missing in possible - inConfig:
         if missing == 'consensus':
             path = 'consensus.py'
+        elif missing == 'medaka':
+            path = 'medaka_consensus'
         else:
             path = missing
         progs[missing] = path
