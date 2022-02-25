@@ -6,6 +6,8 @@ Episode III.5: Rogue Isoforms
 
 Takes R2C2/C3POa data and defines high confidence isoforms.
 
+**This repository for Mandalorion is feature frozen. [The most up to date version of Mandalorion can be found here.](https://github.com/christopher-vollmers/Mandalorion)**
+
 ## Dependencies ##
 
 - [minimap2](https://github.com/lh3/minimap2)
